@@ -7,9 +7,13 @@ var tj = require('@mapbox/togeojson'),
     converted = tj.kml(kml);
 
 converted.features.forEach(function (f) {
-    var propertyName;
+    var propertyName, m;
     for (propertyName in f.properties) {
-        if (propertyName !== 'name') {
+        if (propertyName === 'name') {
+            m = f.properties[propertyName].match(/^Precinct (\d+)/);
+            f.id = +m[1];
+        }
+        else {
             delete f.properties[propertyName];
         }
     }
