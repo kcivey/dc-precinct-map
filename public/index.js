@@ -1,19 +1,23 @@
 jQuery(function ($) {
     const map = L.map('map');
     const $map = $('#map');
+    let precinctLayer;
     L.tileLayer('https://{s}.tiles.mapbox.com/v3/kcivey.i8d7ca3k/{z}/{x}/{y}.png', {
         attribution: '<a href="http://www.mapbox.com/about/maps/" target="_blank">Terms &amp; Feedback</a>',
-        opacity: 0.5
+        opacity: 0.5,
     }).addTo(map);
     fetch('precincts-2012.json')
-        .then(function(response) {
+        .then(function (response) {
             return response.json();
         })
-        .then(function(geoJson) {
-            const currentLayer = L.geoJson(geoJson).addTo(map);
-            map.fitBounds(currentLayer.getBounds());
+        .then(function (geoJson) {
+            precinctLayer = L.geoJson(geoJson).addTo(map);
+            fixMapBounds();
         });
-    $map.on('map-container-resize', function () {
-        setTimeout(function () { map.invalidateSize(); }, 400);
+    $(window).on('resize', function () {
+        setTimeout(fixMapBounds, 250);
     });
+    function fixMapBounds() {
+        map.fitBounds(precinctLayer.getBounds());
+    }
 });
