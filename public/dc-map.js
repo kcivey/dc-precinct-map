@@ -2,32 +2,6 @@ class DcMap { // eslint-disable-line no-unused-vars
 
     constructor(geoJsonData, options = {}) {
         this.properties = {};
-        let style = options.style;
-        if (!style || typeof style === 'object') {
-            const nonEmptyStyle = Object.assign(
-                {
-                    color: 'black',
-                    fillColor: 'white',
-                    fillOpacity: 0.5,
-                    weight: 1,
-                },
-                style
-            );
-            style = function (feature, value) {
-                if (value == null) {
-                    // noinspection JSPotentiallyInvalidUsageOfClassThis
-                    return this.getEmptyStyle(); // eslint-disable-line no-invalid-this
-                }
-                return nonEmptyStyle;
-            };
-        }
-        const innerStyle = style;
-        style = function (feature) {
-            // noinspection JSPotentiallyInvalidUsageOfClassThis
-            const value = this.getData(feature.id);
-            // noinspection JSPotentiallyInvalidUsageOfClassThis
-            return innerStyle.call(this, feature, value);
-        }.bind(this);
         options = Object.assign(
             {
                 id: 'map',
@@ -39,11 +13,19 @@ class DcMap { // eslint-disable-line no-unused-vars
                 },
             },
             options,
-            {style},
+            {
+                style: this.createStyle(options.style),
+            },
         );
         this.set(options);
-        const handleResize = () => setTimeout(() => this.display(), 250);
-        $(window).on('resize', handleResize);
+        let resizeTimer;
+        const handleResize = () => this.display();
+        $(window).on('resize', function () {
+            if (resizeTimer) {
+                clearTimeout(resizeTimer);
+            }
+            resizeTimer = setTimeout(handleResize, 100);
+        });
     }
 
     set(name, value) {
@@ -90,6 +72,34 @@ class DcMap { // eslint-disable-line no-unused-vars
             this.properties[name] = value;
         }
         return this;
+    }
+
+    createStyle(style) {
+        let innerStyle = style;
+        if (!style || typeof style === 'object') {
+            const nonEmptyStyle = Object.assign(
+                {
+                    color: 'black',
+                    fillColor: 'white',
+                    fillOpacity: 0.5,
+                    weight: 1,
+                },
+                style
+            );
+            innerStyle = function (feature, value) {
+                if (value == null) {
+                    // noinspection JSPotentiallyInvalidUsageOfClassThis
+                    return this.getEmptyStyle(); // eslint-disable-line no-invalid-this
+                }
+                return nonEmptyStyle;
+            };
+        }
+        return function (feature) {
+            // noinspection JSPotentiallyInvalidUsageOfClassThis
+            const value = this.getData(feature.id);
+            // noinspection JSPotentiallyInvalidUsageOfClassThis
+            return innerStyle.call(this, feature, value);
+        }.bind(this);
     }
 
     get(name) {
