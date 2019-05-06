@@ -74,6 +74,13 @@ class DcMap { // eslint-disable-line no-unused-vars
         return this;
     }
 
+    get(name) {
+        if (!name) {
+            return this.properties;
+        }
+        return this.properties[name];
+    }
+
     createStyle(style) {
         let innerStyle = style;
         if (!style || typeof style === 'object') {
@@ -100,13 +107,6 @@ class DcMap { // eslint-disable-line no-unused-vars
             // noinspection JSPotentiallyInvalidUsageOfClassThis
             return innerStyle.call(this, feature, value);
         }.bind(this);
-    }
-
-    get(name) {
-        if (!name) {
-            return this.properties;
-        }
-        return this.properties[name];
     }
 
     setId(value) {
