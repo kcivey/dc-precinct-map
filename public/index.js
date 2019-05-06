@@ -1,6 +1,5 @@
 jQuery(function ($) {
-    const map = L.map('map');
-    const $map = $('#map');
+    let map;
     let precinctLayer;
     L.tileLayer('https://{s}.tiles.mapbox.com/v3/kcivey.i8d7ca3k/{z}/{x}/{y}.png', {
         attribution: '<a href="http://www.mapbox.com/about/maps/" target="_blank">Terms &amp; Feedback</a>',
@@ -11,6 +10,7 @@ jQuery(function ($) {
             return response.json();
         })
         .then(function (geoJson) {
+            map = new DcMap(geoJson);
             precinctLayer = L.geoJson(geoJson).addTo(map);
             fixMapBounds();
         });
