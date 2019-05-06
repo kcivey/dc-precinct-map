@@ -1,10 +1,10 @@
-class DcMap {
+class DcMap { // eslint-disable-line no-unused-vars
 
     constructor(geoJsonData, options = {}) {
         this.properties = {};
         let style = options.style;
         if (!style || typeof style === 'object') {
-            const styleForValue = Object.assign(
+            const nonEmptyStyle = Object.assign(
                 {
                     color: 'black',
                     fillColor: 'white',
@@ -13,14 +13,21 @@ class DcMap {
                 },
                 style
             );
-            style = feature => {
-                const value = this.getData(feature.id);
+            style = function (feature, value) {
                 if (value == null) {
-                    return this.getEmptyStyle();
+                    // noinspection JSPotentiallyInvalidUsageOfClassThis
+                    return this.getEmptyStyle(); // eslint-disable-line no-invalid-this
                 }
-                return styleForValue;
+                return nonEmptyStyle;
             };
         }
+        const innerStyle = style;
+        style = function (feature) {
+            // noinspection JSPotentiallyInvalidUsageOfClassThis
+            const value = this.getData(feature.id);
+            // noinspection JSPotentiallyInvalidUsageOfClassThis
+            return innerStyle.call(this, feature, value);
+        }.bind(this);
         options = Object.assign(
             {
                 id: 'map',

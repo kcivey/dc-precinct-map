@@ -9,12 +9,18 @@ jQuery(function ($) {
                 attribution: '<a href="http://www.mapbox.com/about/maps/" target="_blank">Terms &amp; Feedback</a>',
                 opacity: 0.5,
             });
-            const emptyStyle = {
-                fillColor: 'red',
-                color: 'white',
-                fillOpacity: 0.8,
-                weight: 1,
+            const data = [];
+            for (let i = 0; i < 143; i++) {
+                data.push(i % 2 ? 1 : 0);
+            }
+            const style = function (feature, value) {
+                return {
+                    fillColor: value ? 'black' : 'white',
+                    color: value ? 'white' : 'black',
+                    weight: 1,
+                    fillOpacity: 0.6,
+                };
             };
-            map = new DcMap(geoJson, {tileLayer, emptyStyle}).display();
+            map = new DcMap(geoJson, {tileLayer, style, data}).display();
         });
 });
