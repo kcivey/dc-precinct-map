@@ -2,16 +2,37 @@ class DcMap {
 
     constructor(geoJsonData, options = {}) {
         this.properties = {};
-        const defaultStyle = {
-            color: 'black',
-            fillColor: 'white',
-            fillOpacity: 0.5,
-            weight: 1,
-        };
+        let style = options.style;
+        if (!style || typeof style === 'object') {
+            const styleForValue = Object.assign(
+                {
+                    color: 'black',
+                    fillColor: 'white',
+                    fillOpacity: 0.5,
+                    weight: 1,
+                },
+                style
+            );
+            style = feature => {
+                const value = this.getData(feature.id);
+                if (value == null) {
+                    return this.getEmptyStyle();
+                }
+                return styleForValue;
+            };
+        }
         options = Object.assign(
-            {id: 'map', geoJsonData},
+            {
+                id: 'map',
+                geoJsonData,
+                data: {},
+                emptyStyle: {
+                    fillColor: 'none',
+                    weight: 0,
+                },
+            },
             options,
-            {style: Object.assign({}, defaultStyle, options.style || {})},
+            {style},
         );
         this.set(options);
         const handleResize = () => setTimeout(() => this.display(), 250);
@@ -26,7 +47,6 @@ class DcMap {
         }
         else {
             const map = this.getMap();
-            console.log(name, value);
             switch (name) {
                 case 'id':
                     value = L.map(value);
@@ -56,7 +76,6 @@ class DcMap {
                     if (layer) {
                         layer.setStyle(value);
                     }
-                    console.log('layer', layer);
                     break;
                 default:
                     // no addional action
@@ -119,6 +138,28 @@ class DcMap {
 
     getStyle() {
         return this.get('style');
+    }
+
+    setEmptyStyle(value) {
+        return this.set('emptyStyle', value);
+    }
+
+    getEmptyStyle() {
+        return this.get('emptyStyle');
+    }
+
+    setData(id, value) {
+        if (typeof id === 'object') {
+            this.properties.data = id;
+        }
+        else {
+            this.properties.data[id] = value;
+        }
+        return this;
+    }
+
+    getData(id) {
+        return id ? this.properties.data[id] : this.properties.data;
     }
 
     display() {
