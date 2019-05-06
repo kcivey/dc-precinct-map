@@ -2,7 +2,17 @@ class DcMap {
 
     constructor(geoJsonData, options = {}) {
         this.properties = {};
-        options = Object.assign({id: 'map', geoJsonData}, options);
+        const defaultStyle = {
+            color: 'black',
+            fillColor: 'white',
+            fillOpacity: 0.5,
+            weight: 1,
+        };
+        options = Object.assign(
+            {id: 'map', geoJsonData},
+            options,
+            {style: Object.assign({}, defaultStyle, options.style || {})},
+        );
         this.set(options);
         const handleResize = () => setTimeout(() => this.display(), 250);
         $(window).on('resize', handleResize);
@@ -15,6 +25,42 @@ class DcMap {
             }
         }
         else {
+            const map = this.getMap();
+            console.log(name, value);
+            switch (name) {
+                case 'id':
+                    value = L.map(value);
+                    this.setMap(value);
+                    break;
+                case 'tileLayer':
+                    value.addTo(map);
+                    break;
+                case 'geoJsonData':
+                    if (typeof value === 'string') {
+                        value = JSON.parse(value);
+                    }
+                    this.setGeoJsonLayer(L.geoJSON(value));
+                    break;
+                case 'geoJsonLayer':
+                    if (this.properties[name]) {
+                        this.properties[name].remove();
+                    }
+                    const style = this.getStyle();
+                    if (style) {
+                        value.setStyle(style);
+                    }
+                    value.addTo(map);
+                    break;
+                case 'style':
+                    const layer = this.getGeoJsonLayer();
+                    if (layer) {
+                        layer.setStyle(value);
+                    }
+                    console.log('layer', layer);
+                    break;
+                default:
+                    // no addional action
+            }
             this.properties[name] = value;
         }
         return this;
@@ -36,7 +82,7 @@ class DcMap {
     }
 
     setGeoJsonData(value) {
-        return this.set('geoJsonData', value === 'string' ? JSON.parse(value) : value);
+        return this.set('geoJsonData', value);
     }
 
     getGeoJsonData() {
@@ -51,17 +97,12 @@ class DcMap {
         return this.get('tileLayer');
     }
 
-    setMap(map) {
-        return this.set('map', map);
+    setMap(value) {
+        return this.set('map', value);
     }
 
     getMap() {
-        let map = this.get('map');
-        if (!map) {
-            map = L.map(this.getId());
-            this.setMap(map);
-        }
-        return map;
+        return this.get('map');
     }
 
     setGeoJsonLayer(value) {
@@ -69,17 +110,21 @@ class DcMap {
     }
 
     getGeoJsonLayer() {
-        let layer = this.get('geoJsonLayer');
-        if (!layer) {
-            layer = L.geoJson(this.getGeoJsonData()).addTo(this.getMap());
-            this.setGeoJsonLayer(layer);
-        }
-        return layer;
+        return this.get('geoJsonLayer');
+    }
+
+    setStyle(value) {
+        return this.set('style', value);
+    }
+
+    getStyle() {
+        return this.get('style');
     }
 
     display() {
         const bounds = this.getGeoJsonLayer().getBounds();
         this.getMap().fitBounds(bounds);
+        return this;
     }
 
 }
