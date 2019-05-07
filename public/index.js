@@ -10,7 +10,7 @@ jQuery(function ($) {
                 opacity: 0.5,
             });
             const data = [];
-            for (let i = 0; i < 143; i++) {
+            for (let i = 0; i < 144; i++) {
                 data.push(i % 2 ? 1 : 0);
             }
             const style = function (feature, value) {
@@ -22,5 +22,8 @@ jQuery(function ($) {
                 };
             };
             map = new DcMap(geoJson, {tileLayer, style, data}).display();
+            setTimeout(function () {
+                map.setStyle({fillColor: 'red'});
+            }, 3000);
         });
 });

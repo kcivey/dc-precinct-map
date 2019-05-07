@@ -61,6 +61,7 @@ class DcMap { // eslint-disable-line no-unused-vars
                     value.addTo(map);
                     break;
                 case 'style':
+                    value = this.createStyle(value);
                     const layer = this.getGeoJsonLayer();
                     if (layer) {
                         layer.setStyle(value);
@@ -100,6 +101,9 @@ class DcMap { // eslint-disable-line no-unused-vars
                 }
                 return nonEmptyStyle;
             };
+        }
+        else if (innerStyle.length === 1) {
+            return innerStyle;
         }
         return function (feature) {
             // noinspection JSPotentiallyInvalidUsageOfClassThis
