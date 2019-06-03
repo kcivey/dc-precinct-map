@@ -5,8 +5,8 @@ class DcMap { // eslint-disable-line no-unused-vars
         options = Object.assign(
             {
                 id: 'map',
-                geoJsonData,
                 data: {},
+                geoJsonData,
                 emptyStyle: {
                     fillColor: 'none',
                     weight: 0,
@@ -37,28 +37,27 @@ class DcMap { // eslint-disable-line no-unused-vars
         else {
             const map = this.getMap();
             switch (name) {
-                case 'id':
-                    value = L.map(value);
-                    this.setMap(value);
-                    break;
-                case 'tileLayer':
-                    value.addTo(map);
-                    break;
                 case 'geoJsonData':
                     if (typeof value === 'string') {
                         value = JSON.parse(value);
                     }
-                    this.setGeoJsonLayer(L.geoJSON(value));
+                    this.setGeoJsonLayer(L.geoJson(value));
+                    this.bindTooltips();
                     break;
                 case 'geoJsonLayer':
-                    if (this.properties[name]) {
-                        this.properties[name].remove();
+                    const oldLayer = this.getGeoJsonLayer();
+                    if (oldLayer) {
+                        oldLayer.remove();
                     }
                     const style = this.getStyle();
                     if (style) {
                         value.setStyle(style);
                     }
                     value.addTo(map);
+                    break;
+                case 'id':
+                    value = L.map(value);
+                    this.setMap(value);
                     break;
                 case 'style':
                     value = this.createStyle(value);
@@ -67,8 +66,11 @@ class DcMap { // eslint-disable-line no-unused-vars
                         layer.setStyle(value);
                     }
                     break;
+                case 'tileLayer':
+                    value.addTo(map);
+                    break;
                 default:
-                    // no addional action
+                    // no additional action
             }
             this.properties[name] = value;
         }
@@ -80,6 +82,12 @@ class DcMap { // eslint-disable-line no-unused-vars
             return this.properties;
         }
         return this.properties[name];
+    }
+
+    bindTooltips() {
+        this.getGeoJsonLayer().eachLayer(function (layer) {
+            layer.bindTooltip(layer.feature.id.toString());
+        });
     }
 
     createStyle(style) {
