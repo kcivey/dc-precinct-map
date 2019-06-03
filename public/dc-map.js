@@ -85,8 +85,11 @@ class DcMap { // eslint-disable-line no-unused-vars
     }
 
     bindTooltips() {
+        const map = this;
         this.getGeoJsonLayer().eachLayer(function (layer) {
-            layer.bindTooltip(layer.feature.id.toString());
+            const id = layer.feature.id.toString();
+            const data = map.getData(id);
+            layer.bindTooltip(id + ': ' + data);
         });
     }
 
