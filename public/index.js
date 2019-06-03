@@ -22,8 +22,5 @@ jQuery(function ($) {
                 };
             };
             map = new DcMap(geoJson, {tileLayer, style, data}).display();
-            setTimeout(function () {
-                map.setStyle({fillColor: 'red'});
-            }, 3000);
         });
 });
