@@ -12,8 +12,8 @@ class DcMap { // eslint-disable-line no-unused-vars
                     fillColor: 'none',
                     weight: 0,
                 },
-                tooltipFunction(layer, id, data) {
-                    return id + ': ' + data;
+                tooltipFunction(layer, feature, data) {
+                    return feature.id + ': ' + data;
                 },
             },
             options,
@@ -93,11 +93,11 @@ class DcMap { // eslint-disable-line no-unused-vars
 
     bindTooltips() {
         const wrappedTooltipFunction = function (layer) {
-            const id = layer.feature.id.toString();
+            const feature = layer.feature;
             // noinspection JSPotentiallyInvalidUsageOfClassThis
-            const data = this.getData(id);
+            const data = this.getData(feature.id);
             // noinspection JSPotentiallyInvalidUsageOfClassThis
-            return this.getTooltipFunction()(layer, id, data);
+            return this.getTooltipFunction()(layer, feature, data);
         }.bind(this);
         const method = this.getUsePopups() ? 'bindPopup' : 'bindTooltip';
         this.getGeoJsonLayer().eachLayer(function (layer) {
