@@ -60,8 +60,7 @@ class DcMap { // eslint-disable-line no-unused-vars
                     value.addTo(map);
                     break;
                 case 'id':
-                    value = L.map(value);
-                    this.setMap(value);
+                    this.setMap(L.map(value));
                     break;
                 case 'style':
                     value = this.createStyle(value);
@@ -134,6 +133,10 @@ class DcMap { // eslint-disable-line no-unused-vars
             // noinspection JSPotentiallyInvalidUsageOfClassThis
             return innerStyle.call(this, feature, value);
         }.bind(this);
+    }
+
+    refreshStyle() {
+        return this.setStyle(this.getStyle());
     }
 
     setId(value) {
@@ -215,6 +218,7 @@ class DcMap { // eslint-disable-line no-unused-vars
         else {
             this.properties.data[id] = value;
         }
+        this.refreshStyle();
         return this;
     }
 
