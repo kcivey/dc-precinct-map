@@ -1,5 +1,4 @@
 jQuery(function ($) {
-    let map;
     fetch('precincts-2012.json')
         .then(function (response) {
             return response.json();
@@ -21,6 +20,6 @@ jQuery(function ($) {
                     fillOpacity: 0.6,
                 };
             };
-            map = new DcMap(geoJson, {tileLayer, style, data}).display();
+            new DcMap(geoJson, {tileLayer, style, data, usePopups: false}).display();
         });
 });
