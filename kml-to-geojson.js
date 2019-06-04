@@ -16,6 +16,17 @@ converted.features.forEach(function (f) {
             delete f.properties[propertyName];
         }
     }
+    if (f.geometry.type === 'GeometryCollection') {
+        f.geometry.coordinates = [];
+        for (const g of f.geometry.geometries) {
+            if (g.type !== 'Polygon') {
+                throw new Error(`Unexpected ${g.type} in GeometryCollection`);
+            }
+            f.geometry.coordinates.push(g.coordinates);
+        }
+        f.geometry.type = 'MultiPolygon';
+        delete f.geometry.geometries;
+    }
 });
 
 process.stdout.write(JSON.stringify(converted));
