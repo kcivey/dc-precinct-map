@@ -1,16 +1,15 @@
 #!/usr/bin/env node
 
-var tj = require('@mapbox/togeojson'),
-    fs = require('fs'),
-    DOMParser = require('xmldom').DOMParser,
-    kml = new DOMParser().parseFromString(fs.readFileSync(process.argv[2], 'utf8')),
-    converted = tj.kml(kml);
+const tj = require('@mapbox/togeojson');
+const fs = require('fs');
+const DOMParser = require('xmldom').DOMParser;
+const kml = new DOMParser().parseFromString(fs.readFileSync(process.argv[2], 'utf8'));
+const converted = tj.kml(kml);
 
 converted.features.forEach(function (f) {
-    var propertyName, m;
-    for (propertyName in f.properties) {
+    for (const propertyName of Object.keys(f.properties)) {
         if (propertyName === 'name') {
-            m = f.properties[propertyName].match(/^Precinct (\d+)/);
+            const m = f.properties[propertyName].match(/^Precinct (\d+)/);
             f.id = +m[1];
         }
         else {
