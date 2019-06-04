@@ -101,7 +101,6 @@ class DcMap { // eslint-disable-line no-unused-vars
         }.bind(this);
         const method = this.getUsePopups() ? 'bindPopup' : 'bindTooltip';
         this.getGeoJsonLayer().eachLayer(function (layer) {
-            // To avoid errors from a GeometryCollection that gets added
             layer[method](wrappedTooltipFunction);
         });
     }
