@@ -3,13 +3,17 @@ class DcMap { // eslint-disable-line no-unused-vars
     constructor(geoJsonData, options = {}) {
         this.properties = {};
         options = Object.assign(
-            {
+            { // order here is important
                 id: 'map',
                 data: {},
+                usePopups: false,
                 geoJsonData,
                 emptyStyle: {
                     fillColor: 'none',
                     weight: 0,
+                },
+                tooltipFunction(layer, id, data) {
+                    return id + ': ' + data;
                 },
             },
             options,
@@ -69,6 +73,9 @@ class DcMap { // eslint-disable-line no-unused-vars
                 case 'tileLayer':
                     value.addTo(map);
                     break;
+                case 'tooltipFunction':
+                    value = value.bind(this);
+                    break;
                 default:
                     // no additional action
             }
@@ -85,11 +92,17 @@ class DcMap { // eslint-disable-line no-unused-vars
     }
 
     bindTooltips() {
-        const map = this;
-        this.getGeoJsonLayer().eachLayer(function (layer) {
+        const wrappedTooltipFunction = function (layer) {
             const id = layer.feature.id.toString();
-            const data = map.getData(id);
-            layer.bindTooltip(id + ': ' + data);
+            // noinspection JSPotentiallyInvalidUsageOfClassThis
+            const data = this.getData(id);
+            // noinspection JSPotentiallyInvalidUsageOfClassThis
+            return this.getTooltipFunction()(layer, id, data);
+        }.bind(this);
+        const method = this.getUsePopups() ? 'bindPopup' : 'bindTooltip';
+        this.getGeoJsonLayer().eachLayer(function (layer) {
+            // To avoid errors from a GeometryCollection that gets added
+            layer[method](wrappedTooltipFunction);
         });
     }
 
@@ -178,6 +191,22 @@ class DcMap { // eslint-disable-line no-unused-vars
 
     getEmptyStyle() {
         return this.get('emptyStyle');
+    }
+
+    setTooltipFunction(value) {
+        return this.set('tooltipFunction', value);
+    }
+
+    getTooltipFunction() {
+        return this.get('tooltipFunction');
+    }
+
+    setUsePopups(value) {
+        return this.set('usePopups', value);
+    }
+
+    getUsePopups() {
+        return this.get('usePopups');
     }
 
     setData(id, value) {
