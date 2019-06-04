@@ -8,10 +8,7 @@ jQuery(function ($) {
                 attribution: '<a href="http://www.mapbox.com/about/maps/" target="_blank">Terms &amp; Feedback</a>',
                 opacity: 0.5,
             });
-            const data = [];
-            for (let i = 0; i < 144; i++) {
-                data.push(i % 2 ? 1 : 0);
-            }
+            const data = i => i % 2 ? 1 : 0;
             const style = function (feature, value) {
                 return {
                     fillColor: value ? 'black' : 'white',

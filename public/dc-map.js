@@ -219,7 +219,11 @@ class DcMap { // eslint-disable-line no-unused-vars
     }
 
     getData(id) {
-        return id ? this.properties.data[id] : this.properties.data;
+        const data = this.properties.data;
+        if (id == null) {
+            return data;
+        }
+        return (typeof data === 'function') ? data(id) : data[id];
     }
 
     display() {
