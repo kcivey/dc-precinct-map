@@ -1,3 +1,5 @@
+/* globals L, jQuery */
+
 class DcMap { // eslint-disable-line no-unused-vars
 
     constructor(geoJsonData, options = {}) {
@@ -19,12 +21,12 @@ class DcMap { // eslint-disable-line no-unused-vars
             options,
             {
                 style: this.createStyle(options.style),
-            },
+            }
         );
         this.set(options);
         let resizeTimer;
         const handleResize = () => this.display();
-        $(window).on('resize', function () {
+        jQuery(window).on('resize', function () {
             if (resizeTimer) {
                 clearTimeout(resizeTimer);
             }
@@ -48,7 +50,7 @@ class DcMap { // eslint-disable-line no-unused-vars
                     this.setGeoJsonLayer(L.geoJson(value));
                     this.bindTooltips();
                     break;
-                case 'geoJsonLayer':
+                case 'geoJsonLayer': {
                     const oldLayer = this.getGeoJsonLayer();
                     if (oldLayer) {
                         oldLayer.remove();
@@ -59,16 +61,18 @@ class DcMap { // eslint-disable-line no-unused-vars
                     }
                     value.addTo(map);
                     break;
+                }
                 case 'id':
                     this.setMap(L.map(value));
                     break;
-                case 'style':
+                case 'style': {
                     value = this.createStyle(value);
                     const layer = this.getGeoJsonLayer();
                     if (layer) {
                         layer.setStyle(value);
                     }
                     break;
+                }
                 case 'tileLayer':
                     value.addTo(map);
                     break;

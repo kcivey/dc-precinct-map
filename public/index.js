@@ -1,4 +1,6 @@
-jQuery(function ($) {
+/* globals DcMap, jQuery, L */
+
+jQuery(function () {
     fetch('precincts-2012.json')
         .then(function (response) {
             return response.json();
@@ -20,8 +22,9 @@ jQuery(function ($) {
                     fillOpacity: 0.6,
                 };
             };
+            const data = {};
             const map = new DcMap(geoJson, {tileLayer, style, data, usePopups: false}).display();
-            // setInterval(setData, 1000);
+            setInterval(setData, 1000);
             function setData() {
                 const data = [];
                 for (let i = 0; i < 144; i++) {
