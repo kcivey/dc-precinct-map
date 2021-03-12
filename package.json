@@ -9,7 +9,7 @@
     "eslint": "^6.6.0",
     "jquery": "^3.4.1",
     "leaflet": "^1.5.1",
-    "xmldom": "^0.1.27"
+    "xmldom": "^0.5.0"
   },
   "main": "kml-to-geojson.js",
   "devDependencies": {},
